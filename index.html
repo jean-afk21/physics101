@@ -44,14 +44,27 @@ body{
 /* top centre: level + score */
 .top{position:absolute;top:1.2cqw;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.5cqw}
 .level{background:rgba(10,16,36,.5);padding:.3cqw 1.2cqw;border-radius:99px;font-weight:700;letter-spacing:.08em;font-size:.95em;text-shadow:0 1px 2px #000a}
-.pips{display:flex;gap:.6cqw}
+.pips{display:flex;gap:.6cqw;align-items:center;justify-content:center;min-height:1.8cqw}
 .pips i{width:1.1cqw;height:1.1cqw;border-radius:50%;border:2px solid rgba(255,255,255,.7);background:rgba(10,16,36,.35)}
 .pips i.on{background:var(--accent);border-color:#fff}
+.heart{display:inline-block;font-size:1.25em;line-height:1;color:#f87171;opacity:.25;filter:drop-shadow(0 0 8px rgba(248,113,113,.4));}
+.heart.on{opacity:1}
+.timer-wrap{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:130px;padding:4px 10px;border-radius:12px;background:rgba(15,23,42,.45);border:1px solid rgba(255,255,255,.15)}
+.timer-wrap.low{animation:pulseTimer 0.7s ease-in-out infinite}
+@keyframes pulseTimer{0%,100%{box-shadow:0 0 0 rgba(239,68,68,0);transform:scale(1)}50%{box-shadow:0 0 16px rgba(239,68,68,.7);transform:scale(1.02)}}
+.timer-value{font-size:1.75em;font-weight:900;letter-spacing:.08em;color:#fff}
+.timer-value.low{color:#fca5a5}
+.timer-bar{width:110px;height:6px;border-radius:99px;background:rgba(255,255,255,.15);overflow:hidden}
+.timer-fill{display:block;height:100%;background:linear-gradient(90deg,#4ade80,#fbbf24,#ef4444);border-radius:inherit;transition:width .15s linear,background .15s linear}
+.bonus-pop{position:absolute;transform:translate(-50%, -90%);font-size:.7em;font-weight:800;letter-spacing:.08em;color:#a7f3d0;text-shadow:0 0 10px rgba(74,222,128,.9);animation:bonusFloat .8s ease-out forwards}
+@keyframes bonusFloat{0%{opacity:0;transform:translate(-50%,0)}20%{opacity:1}100%{opacity:0;transform:translate(-50%,-24px)}}
 .scorebar{display:flex;gap:.7cqw;align-items:stretch}
 .chip{background:rgba(10,16,36,.5);border-radius:.9cqw;padding:.4cqw 1.1cqw;text-align:center;min-width:6cqw;text-shadow:0 1px 2px #000a}
 .chip b{display:block;font-size:1.7em;line-height:1.15;color:#fff}
 .chip span{font-size:.75em;letter-spacing:.1em;opacity:.7}
 .chip.main b{font-size:2.4em;color:var(--accent2)}
+.chip-streak small{display:block;margin-top:2px;font-size:.55em;line-height:1.1;letter-spacing:.14em;color:#fbbf24;opacity:0;transition:opacity .15s}
+.chip-streak small.on{opacity:1}
 
 /* top right: round icon buttons */
 .tools{position:absolute;top:1.2cqw;right:1.4cqw;display:flex;gap:.8cqw}
@@ -92,6 +105,34 @@ button:active{transform:scale(.95)}
   font-size:max(24px,4.4cqw);font-weight:900;color:#fff;text-shadow:0 0 20px var(--accent),0 2px 4px #000;
   opacity:0;pointer-events:none;transition:opacity .15s;white-space:nowrap;
 }
+
+.overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:12;background:rgba(8,12,22,.7);backdrop-filter:blur(4px)}
+.overlay.hidden{display:none}
+.panel{width:min(92%,560px);background:rgba(15,19,34,.96);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:20px 18px;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.panel-header{font-size:1.15em;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:#f8fafc;margin-bottom:14px;text-align:center}
+.mode-tabs{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px}
+.mode-tab{padding:10px 8px;border-radius:10px;background:rgba(255,255,255,.04);color:#cbd5e1;border:1px solid rgba(255,255,255,.1);font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+.mode-tab.active{background:linear-gradient(180deg,#fbbf24,#f97316);color:#1c1207;border-color:transparent}
+.level-list{display:grid;gap:10px;max-height:min(66vh,460px);overflow:auto;padding-right:4px}
+.level-option{display:grid;grid-template-columns:48px 1fr auto auto;align-items:center;gap:10px;width:100%;padding:14px 16px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.02);color:#fff;text-align:left}
+.level-option:hover{background:rgba(255,255,255,.04)}
+.level-option .num{font-weight:800;font-size:1.05em;color:#fbbf24;width:36px;text-align:center}
+.level-option .name{font-weight:700}
+.level-option .best{font-size:.9em;color:#cbd5e1}
+.level-option .clear{font-size:.78em;font-weight:700;letter-spacing:.08em;text-transform:uppercase;border-radius:999px;padding:.35rem .7rem;background:rgba(34,197,94,.18);color:#86efac;border:1px solid rgba(34,197,94,.45)}
+.level-option .clear[hidden]{display:none}
+.level-option.active{outline:2px solid rgba(96,165,250,.9);box-shadow:0 0 0 2px rgba(96,165,250,.15)}
+.complete-panel{text-align:center;padding:26px 22px 20px}
+.complete-panel h2{font-size:clamp(1.5rem,3vw,2.3rem);font-weight:900;letter-spacing:.06em;text-transform:uppercase;margin-bottom:18px}
+.complete-lines{display:grid;gap:8px;margin-bottom:18px}
+.complete-line{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08)}
+.complete-line span{font-weight:700;color:#cbd5e1;letter-spacing:.08em;text-transform:uppercase}
+.complete-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.complete-actions button,.panel-button{padding:12px 10px;border-radius:12px;font-size:.95em;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+.complete-actions .primary,.panel-button.primary{background:linear-gradient(180deg,#fbbf24,#f97316);color:#1c1207}
+.complete-actions button:not(.primary),.panel-button{background:rgba(255,255,255,.06);color:#fff;border:1px solid rgba(255,255,255,.12)}
+.complete-actions button[hidden]{display:none}
+.complete-record{display:inline-block;margin:0 auto 16px;padding:6px 10px;border-radius:999px;background:rgba(34,197,94,.14);border:1px solid rgba(34,197,94,.4);color:#86efac;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
 </style>
 </head>
 <body>
@@ -117,7 +158,7 @@ button:active{transform:scale(.95)}
         <div class="level" id="levelLabel">LEVEL 1</div>
         <div class="pips" id="pips"><i></i><i></i><i></i></div>
         <div class="scorebar">
-          <div class="chip"><b id="streak">0</b><span>STREAK</span></div>
+          <div class="chip chip-streak"><b id="streak">0</b><span>STREAK</span><small id="onFireTag">ON FIRE</small></div>
           <div class="chip main"><b id="score">0</b><span>SCORE</span></div>
           <div class="chip"><b id="best">0</b><span>BEST</span></div>
         </div>
@@ -134,6 +175,9 @@ button:active{transform:scale(.95)}
         <button class="icon" id="settingsButton" title="Settings" aria-label="Settings">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21v-7"/><path d="M4 10V3"/><path d="M12 21v-9"/><path d="M12 8V3"/><path d="M20 21v-5"/><path d="M20 12V3"/><path d="M2 14h4"/><path d="M10 8h4"/><path d="M18 16h4"/></svg>
         </button>
+        <button class="icon" id="menuButton" title="Level select (Esc)" aria-label="Level select">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="6" height="6" rx="1.5"/><rect x="15" y="3" width="6" height="4" rx="1.5"/><rect x="3" y="15" width="4" height="6" rx="1.5"/><rect x="11" y="11" width="10" height="10" rx="1.5"/></svg>
+        </button>
         <button class="icon" id="restartButton" title="Restart (R)" aria-label="Restart">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
         </button>
@@ -149,6 +193,31 @@ button:active{transform:scale(.95)}
     </div>
 
     <div id="streakPop"></div>
+
+    <div id="menuOverlay" class="overlay">
+      <div class="panel">
+        <div class="panel-header">Level Select</div>
+        <div id="modeTabs" class="mode-tabs"></div>
+        <div id="menuLevels" class="level-list"></div>
+      </div>
+    </div>
+
+    <div id="completeOverlay" class="overlay hidden">
+      <div class="panel complete-panel">
+        <h2 id="completeTitle">LEVEL 1 CLEARED!</h2>
+        <div class="complete-lines">
+          <div class="complete-line"><span id="completeMetricLabel">Score</span><strong id="completeScore">0</strong></div>
+          <div class="complete-line"><span id="completeBestLabel">Best</span><strong id="completeBest">0</strong></div>
+          <div class="complete-line"><span>Longest streak</span><strong id="completeStreak">0</strong></div>
+        </div>
+        <div id="completeRecord" class="complete-record" hidden>New record!</div>
+        <div class="complete-actions">
+          <button id="nextLevelButton" class="primary">Next Level</button>
+          <button id="playAgainButton">Play Again</button>
+          <button id="allLevelsButton">All Levels</button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -174,12 +243,21 @@ const ASSETS={
 const canvas=document.getElementById("gameCanvas"),ctx=canvas.getContext("2d");
 const $=id=>document.getElementById(id);
 const scoreEl=$("score"),streakEl=$("streak"),bestEl=$("best"),streakPop=$("streakPop");
+const onFireTag=$("onFireTag");
 const shootButton=$("shootButton"),restartButton=$("restartButton"),muteButton=$("muteButton");
 const soundOnIcon=$("soundOnIcon"),soundOffIcon=$("soundOffIcon");
 const physButton=$("physButton"),settingsButton=$("settingsButton"),settingsPanel=$("settingsPanel");
+const menuButton=$("menuButton");
+const menuOverlay=$("menuOverlay"),completeOverlay=$("completeOverlay");
+const menuLevels=$("menuLevels");
+const modeTabs=$("modeTabs");
+const completeTitle=$("completeTitle"),completeScore=$("completeScore"),completeBest=$("completeBest");
+const completeMetricLabel=$("completeMetricLabel"),completeBestLabel=$("completeBestLabel");
+const completeStreak=$("completeStreak"),completeRecord=$("completeRecord");
+const nextLevelButton=$("nextLevelButton"),playAgainButton=$("playAgainButton"),allLevelsButton=$("allLevelsButton");
 const optInstant=$("optInstant"),optAssist=$("optAssist"),optHitbox=$("optHitbox");
 const physPanel=$("physPanel"),levelLabel=$("levelLabel"),hintBar=$("hintBar");
-const pipEls=[...document.querySelectorAll("#pips i")];
+const pips=$("pips");
 
 const W=1000,H=600;
 canvas.width=W;canvas.height=H;
@@ -203,19 +281,26 @@ const FIRE_MS=13;                      // the ball "catches fire" above this spe
 const IMPACT_MS=5;                     // impacts faster than this get a shockwave (visual only)
 
 // ---- levels ----
-// amp = how far the hoop moves up/down (px), period = seconds for one full up-and-down cycle
+const POINTS={rim:1,swish:2,bank:3};
+const MAX_MULT=5;
+const HEARTS=5;
+const TIME_START=30;
+const TIME_MAX=60;
+const TIME_BONUS={rim:2,swish:4,bank:4};
+const FIRE_STREAK=3;
+const GHOST_INTERVAL=3;
 const LEVELS=[
-  {name:"Warm-up",    ballX:250,hoopX:760,hoopY:230,amp:0,  period:0},
-  {name:"Long range", ballX:180,hoopX:830,hoopY:210,amp:0,  period:0},
-  {name:"Lift off",   ballX:160,hoopX:830,hoopY:230,amp:60, period:5},
-  {name:"Elevator",   ballX:140,hoopX:840,hoopY:230,amp:100,period:4},
-  {name:"Rocket",     ballX:130,hoopX:850,hoopY:230,amp:120,period:3}
+  {name:"Warm-up",    ballX:250,hoopX:760,hoopY:230,amp:0,  period:0,target:20},
+  {name:"Long range", ballX:180,hoopX:830,hoopY:210,amp:0,  period:0,target:30},
+  {name:"Lift off",   ballX:160,hoopX:830,hoopY:230,amp:60, period:5,target:40},
+  {name:"Elevator",   ballX:140,hoopX:840,hoopY:230,amp:100,period:4,target:50},
+  {name:"Rocket",     ballX:130,hoopX:850,hoopY:230,amp:120,period:3,target:60}
 ];
-const LEVEL_GOAL=pipEls.length||3;     // baskets needed to clear a level
 function levelConfig(i){
   if(i<LEVELS.length)return LEVELS[i];
-  const last=LEVELS[LEVELS.length-1];   // after the last level: keep speeding the hoop up
-  return {...last,name:"Level "+(i+1),period:Math.max(1.8,last.period-0.25*(i-LEVELS.length+1))};
+  const last=LEVELS[LEVELS.length-1];
+  const extra=i-LEVELS.length+1;
+  return {...last,name:"Level "+(i+1),period:Math.max(1.8,last.period-0.25*extra),target:last.target+10*extra};
 }
 
 // ---- settings (saved in the browser) ----
@@ -226,12 +311,14 @@ let showHitbox=false;
 let muted=store.get("hoops_muted","0")==="1";
 
 // ---- state ----
-let score=0,streak=0,best=parseInt(store.get("hoops_best","0"),10)||0;
-let level=0,levelBaskets=0,pendingLevelUp=false;
+let mode="levels";
+let score=0,streak=0,best=0,runMaxStreak=0,hearts=HEARTS,timeLeft=TIME_START;
+let level=0,pendingLevelUp=false,playing=false,newRecord=false,timeExpired=false;
 let mouseX=250,mouseY=460,dragging=false,isShooting=false,scoredThisShot=false;
 let restTimer=0,shotTimer=0,maxH=0,fireAmt=0,shake=0;
 let particles=[],flames=[],rings=[],netStretch=0,netVelocity=0,netSway=0,netSwayVelocity=0,flashAlpha=0,ballTrail=[];
 let hint={text:"",t:0},banner={title:"",sub:"",t:0};
+let ghostPath=[],ghostRecording=false;
 const touched={rim:false,board:false};
 
 // the locked-in aim: launch vector = (ball position - pull point), clamped to MAX_DRAG
@@ -275,11 +362,88 @@ function poleRect(){const b=boardRect();return {l:b.l+5,t:b.b,r:b.l+20,b:FLOOR_Y
 function ballHeightM(){return (FLOOR_Y-ball.y-ball.radius)/PX_PER_M;}
 function speedMS(){return Math.hypot(ball.velocityX,ball.velocityY)*FPS/PX_PER_M;}
 
-// ---- HUD ----
+function renderModeTabs(){
+  modeTabs.innerHTML="";
+  ["levels","time"].forEach(name=>{
+    const btn=document.createElement("button");
+    btn.type="button";
+    btn.textContent=name==="levels"?"LEVELS":"TIME ATTACK";
+    btn.className="mode-tab"+(mode===name?" active":"");
+    btn.addEventListener("click",()=>{
+      mode=name;
+      if(!playing){renderMenu();renderModeTabs();}
+      else {startLevel(level);}
+    });
+    modeTabs.appendChild(btn);
+  });
+}
+
+function renderMenu(){
+  menuLevels.innerHTML="";
+  LEVELS.forEach((L,i)=>{
+    const btn=document.createElement("button");
+    btn.type="button";
+    btn.className="level-option"+(i===level&&playing?" active":"");
+    const cleared=store.get("hoops_cleared_"+i,"0")==="1";
+    if(mode==="time"){
+      const bestScore=parseInt(store.get("hoops_tabest_"+i,"0"),10)||0;
+      const bestStreak=parseInt(store.get("hoops_tastreak_"+i,"0"),10)||0;
+      btn.innerHTML='<span class="num">'+(i+1)+'.</span><span class="name">'+L.name+'</span><span class="best">best score '+bestScore+' · streak '+bestStreak+'</span><span class="clear" hidden>✓</span>';
+    } else {
+      const bestStreak=parseInt(store.get("hoops_streak_"+i,"0"),10)||0;
+      btn.innerHTML='<span class="num">'+(i+1)+'.</span><span class="name">'+L.name+'</span><span class="best">'+(cleared?"✓ cleared · best streak "+bestStreak:"best streak "+bestStreak)+'</span><span class="clear"'+(cleared?'':' hidden')+'>✓ cleared</span>';
+    }
+    btn.addEventListener("click",()=>startLevel(i));
+    menuLevels.appendChild(btn);
+  });
+}
+
 function updateHud(){
-  scoreEl.textContent=score;streakEl.textContent=streak;bestEl.textContent=best;
-  levelLabel.textContent="LEVEL "+(level+1)+"  ·  "+levelConfig(level).name;
-  pipEls.forEach((p,i)=>p.classList.toggle("on",i<levelBaskets));
+  const mult=streak>0?Math.min(streak,MAX_MULT):1;
+  const onFire = streak>=FIRE_STREAK;
+  scoreEl.textContent = mode==="time" ? String(score) : score + " / " + levelConfig(level).target;
+  streakEl.textContent = streak + "x" + mult;
+  onFireTag.classList.toggle("on",onFire);
+  onFireTag.hidden=!onFire;
+  if(mode==="time"){
+    levelLabel.textContent="TIME ATTACK  ·  "+levelConfig(level).name;
+    bestEl.textContent=String(best);
+  } else {
+    levelLabel.textContent="LEVEL "+(level+1)+"  ·  "+levelConfig(level).name;
+    bestEl.textContent=String(best);
+  }
+  if(mode==="time"){
+    pips.innerHTML='';
+    const timerWrap=document.createElement("div");
+    timerWrap.className="timer-wrap";
+    const timerValue=document.createElement("div");
+    timerValue.className="timer-value"+(timeLeft<=10?" low":"");
+    const sec=Math.max(0,Math.ceil(timeLeft));
+    timerValue.textContent=Math.floor(sec/60)+":"+String(sec%60).padStart(2,"0");
+    const bar=document.createElement("div");
+    bar.className="timer-bar";
+    const fill=document.createElement("div");
+    fill.className="timer-fill";
+    fill.style.width=(timeLeft/TIME_START)*100+"%";
+    if(timeLeft<=10){fill.style.background="#ef4444";timerWrap.classList.add("low");}
+    bar.appendChild(fill);
+    timerWrap.appendChild(timerValue);timerWrap.appendChild(bar);
+    pips.appendChild(timerWrap);
+    if(score>0){
+      const bonusPopup=document.createElement("div");
+      bonusPopup.className="bonus-pop";
+      bonusPopup.textContent="+"+TIME_BONUS.rim+"s";
+      timerWrap.appendChild(bonusPopup);
+    }
+  } else {
+    pips.innerHTML='';
+    for(let i=0;i<HEARTS;i++){
+      const heart=document.createElement("span");
+      heart.className="heart"+(i<hearts?" on":"");
+      heart.textContent="♥";
+      pips.appendChild(heart);
+    }
+  }
   shootButton.style.display=instant?"none":"block";
   hintBar.textContent=instant
     ?"Drag back from the ball and release to shoot   •   Space repeats the last shot   •   R restart"
@@ -293,6 +457,8 @@ function updateHud(){
   muteButton.setAttribute("aria-label",muted?"Unmute sound":"Mute sound");
   muteButton.title=muted?"Unmute sound (M)":"Mute sound (M)";
   optInstant.checked=instant;optAssist.checked=assist;optHitbox.checked=showHitbox;
+  renderMenu();
+  renderModeTabs();
 }
 
 function applyLevel(){
@@ -300,18 +466,98 @@ function applyLevel(){
   hoop.x=L.hoopX;hoop.baseY=L.hoopY;hoop.y=L.hoopY;hoop.amp=L.amp;
   hoop.omega=L.period?2*Math.PI/(L.period*FPS):0;hoop.tick=0;hoop.vy=0;
   start.x=L.ballX;
-  levelBaskets=0;
 }
 
 function resetBall(){
   ball.x=start.x;ball.y=start.y;ball.velocityX=0;ball.velocityY=0;ball.spin=0;
   isShooting=false;scoredThisShot=false;ballTrail=[];restTimer=0;shotTimer=0;fireAmt=0;maxH=ballHeightM();
+  ghostRecording=false;
+}
+
+function showMenu(){
+  playing=false;
+  menuOverlay.classList.remove("hidden");
+  completeOverlay.classList.add("hidden");
+  renderMenu();
+  renderModeTabs();
+}
+
+function hideMenus(){
+  menuOverlay.classList.add("hidden");
+  completeOverlay.classList.add("hidden");
+}
+
+function startLevel(i){
+  level=i;
+  mode=mode||"levels";
+  score=0;streak=0;runMaxStreak=0;pendingLevelUp=false;newRecord=false;timeExpired=false;
+  hearts=HEARTS;timeLeft=TIME_START;ghostPath=[];ghostRecording=false;
+  if(mode==="time"){
+    best=parseInt(store.get("hoops_tabest_"+i,"0"),10)||0;
+  } else {
+    best=parseInt(store.get("hoops_streak_"+i,"0"),10)||0;
+  }
+  aim.set=false;dragging=false;
+  hideMenus();
+  applyLevel();resetBall();
+  playing=true;
+  banner.title=mode==="time"?"TIME ATTACK":"LEVEL "+(level+1);banner.sub=levelConfig(level).name;banner.t=170;
+  updateHud();
+}
+
+function showComplete(){
+  playing=false;
+  pendingLevelUp=false;
+  store.set("hoops_cleared_"+level,"1");
+  completeTitle.textContent="LEVEL "+(level+1)+" CLEARED!";
+  completeMetricLabel.textContent="Score";
+  completeBestLabel.textContent="Target";
+  completeScore.textContent=String(score);
+  completeBest.textContent=String(levelConfig(level).target);
+  completeStreak.textContent=String(runMaxStreak);
+  completeRecord.hidden=!newRecord;
+  nextLevelButton.hidden=level>=LEVELS.length-1;
+  menuOverlay.classList.add("hidden");
+  completeOverlay.classList.remove("hidden");
+  levelChime();
+  renderMenu();
+  updateHud();
+}
+
+function showGameOver(){
+  playing=false;
+  completeTitle.textContent="GAME OVER";
+  completeMetricLabel.textContent="Score";
+  completeBestLabel.textContent="Target";
+  completeScore.textContent=String(score);
+  completeBest.textContent=String(levelConfig(level).target);
+  completeStreak.textContent=String(runMaxStreak);
+  completeRecord.hidden=!newRecord;
+  nextLevelButton.hidden=true;
+  menuOverlay.classList.add("hidden");
+  completeOverlay.classList.remove("hidden");
+  renderMenu();
+  updateHud();
+}
+
+function showTimeUp(){
+  playing=false;
+  completeTitle.textContent="TIME'S UP";
+  completeMetricLabel.textContent="Score";
+  completeBestLabel.textContent="Best";
+  completeScore.textContent=String(score);
+  completeBest.textContent=String(best);
+  completeStreak.textContent=String(runMaxStreak);
+  completeRecord.hidden=!newRecord;
+  nextLevelButton.hidden=true;
+  menuOverlay.classList.add("hidden");
+  completeOverlay.classList.remove("hidden");
+  renderMenu();
+  updateHud();
 }
 
 function restartGame(){
-  score=0;streak=0;level=0;pendingLevelUp=false;banner.t=0;
-  aim.set=false;dragging=false;
-  applyLevel();resetBall();updateHud();
+  startLevel(level);
 }
 
 function showHint(text){hint.text=text;hint.t=110;}
@@ -334,27 +580,28 @@ function updateAim(){
 }
 
 function releaseDrag(){
-  if(!dragging)return;
+  if(!playing||!dragging)return;
   dragging=false;
   if(instant&&aim.set)shoot();              // instant mode: letting go fires the shot
 }
 
-window.addEventListener("mousemove",e=>{if(dragging){setPointer(e);updateAim();}});
-canvas.addEventListener("mousedown",e=>{if(!isShooting){dragging=true;setPointer(e);updateAim();}});
+window.addEventListener("mousemove",e=>{if(playing&&dragging){setPointer(e);updateAim();}});
+canvas.addEventListener("mousedown",e=>{if(!playing||isShooting)return;dragging=true;setPointer(e);updateAim();});
 window.addEventListener("mouseup",releaseDrag);
-canvas.addEventListener("touchstart",e=>{if(!isShooting){dragging=true;setPointer(e);updateAim();e.preventDefault();}},{passive:false});
-window.addEventListener("touchmove",e=>{if(dragging){setPointer(e);updateAim();e.preventDefault();}},{passive:false});
+canvas.addEventListener("touchstart",e=>{if(!playing||isShooting)return;dragging=true;setPointer(e);updateAim();e.preventDefault();},{passive:false});
+window.addEventListener("touchmove",e=>{if(playing&&dragging){setPointer(e);updateAim();e.preventDefault();}},{passive:false});
 window.addEventListener("touchend",releaseDrag);
 window.addEventListener("touchcancel",()=>{dragging=false;});
 
 function shoot(){
-  if(isShooting)return;
+  if(!playing||isShooting)return;
   if(!aim.set){showHint("Drag back from the ball to aim first");return;}
   dragging=false;
   ball.velocityX=aim.dx*POWER_SCALE;
   ball.velocityY=aim.dy*POWER_SCALE;
   isShooting=true;scoredThisShot=false;shotTimer=0;restTimer=0;maxH=ballHeightM();
   touched.rim=false;touched.board=false;
+  ghostPath=[];ghostRecording=true;
   const ms=speedMS();
   whoosh(Math.hypot(ball.velocityX,ball.velocityY));
   if(ms>=FIRE_MS){                          // power shot: launch burst
@@ -362,8 +609,12 @@ function shoot(){
   }
 }
 
-shootButton.addEventListener("click",()=>{shoot();shootButton.blur();});
+shootButton.addEventListener("click",()=>{if(playing){shoot();}shootButton.blur();});
 restartButton.addEventListener("click",()=>{restartGame();restartButton.blur();});
+menuButton.addEventListener("click",()=>{showMenu();menuButton.blur();});
+playAgainButton.addEventListener("click",()=>{startLevel(level);playAgainButton.blur();});
+allLevelsButton.addEventListener("click",()=>{showMenu();allLevelsButton.blur();});
+nextLevelButton.addEventListener("click",()=>{startLevel(Math.min(level+1,LEVELS.length-1));nextLevelButton.blur();});
 muteButton.addEventListener("click",()=>{muted=!muted;store.set("hoops_muted",muted?"1":"0");updateHud();muteButton.blur();});
 physButton.addEventListener("click",()=>{showPhys=!showPhys;store.set("hoops_phys",showPhys?"1":"0");updateHud();physButton.blur();});
 settingsButton.addEventListener("click",()=>{settingsPanel.hidden=!settingsPanel.hidden;settingsButton.blur();});
@@ -374,6 +625,8 @@ optHitbox.addEventListener("change",()=>{showHitbox=optHitbox.checked;});
 document.addEventListener("keydown",e=>{
   if(e.target&&e.target.tagName==="INPUT")return;
   const k=e.key.toLowerCase();
+  if(e.key==="Escape"){e.preventDefault();showMenu();return;}
+  if(!playing){return;}
   if(e.code==="Space"){e.preventDefault();if(!e.repeat)shoot();}
   if(k==="r")restartGame();
   if(k==="h"){showHitbox=!showHitbox;updateHud();}
@@ -531,9 +784,42 @@ function applyMagnet(dt){
 function checkScore(){
   const hoopLeft=hoop.x,hoopRight=hoop.x+hoop.width,hoopY=hoop.y;
   if(!scoredThisShot&&ball.x>hoopLeft+4&&ball.x<hoopRight-4&&ball.y>hoopY&&ball.y<hoopY+22&&ball.velocityY>0){
-    score++;streak++;levelBaskets++;
-    if(levelBaskets>=LEVEL_GOAL)pendingLevelUp=true;
-    if(score>best){best=score;store.set("hoops_best",best);}
+    const type=touched.board?"bank":touched.rim?"rim":"swish";
+    const multiplier=Math.min(streak+1,MAX_MULT);
+    const points=POINTS[type]*multiplier;
+    streak++;
+    if(streak>runMaxStreak){runMaxStreak=streak;}
+    if(mode==="time"){
+      const streakKey="hoops_tastreak_"+level;
+      const saved=parseInt(store.get(streakKey,"0"),10)||0;
+      if(streak>saved){store.set(streakKey,String(streak));newRecord=true;}
+    } else {
+      const streakKey="hoops_streak_"+level;
+      const saved=parseInt(store.get(streakKey,"0"),10)||0;
+      if(streak>saved){store.set(streakKey,String(streak));newRecord=true;}
+    }
+    if(mode==="time" && !timeExpired){
+      const bonus=TIME_BONUS[type];
+      timeLeft=Math.min(TIME_MAX,timeLeft+bonus);
+      const pop=document.createElement("div");
+      pop.textContent="+"+bonus+"s";
+      pop.className="bonus-pop";
+      const timerWrap=document.querySelector(".timer-wrap");
+      if(timerWrap){timerWrap.appendChild(pop);}
+    }
+    score+=points;
+    if(mode==="time"){
+      const bestKey="hoops_tabest_"+level;
+      const savedScore=parseInt(store.get(bestKey,"0"),10)||0;
+      if(score>savedScore){store.set(bestKey,String(score));best=score;newRecord=true;}
+      else {best=savedScore;}
+    } else {
+      const target=levelConfig(level).target;
+      if(score>=target){pendingLevelUp=true;}
+      if(mode!=="time"){
+        best=Math.max(best,runMaxStreak);
+      }
+    }
     updateHud();
     scoredThisShot=true;
     netVelocity+=Math.max(1,ball.velocityY*0.2);
@@ -541,8 +827,8 @@ function checkScore(){
     flashAlpha=0.35;
     spawnParticles(hoop.x+hoop.width/2,hoop.y+10,"#facc15",26);
     swishChime();
-    const kind=touched.board?"BANK SHOT!":touched.rim?"RIM IN!":"SWISH!";
-    streakPop.textContent = streak>1 ? (streak+"x STREAK!") : kind;
+    const label=touched.board?"BANK SHOT!":touched.rim?"RIM IN!":"SWISH!";
+    streakPop.textContent = label + " +" + points + (multiplier>1 ? "  x"+multiplier : "");
     streakPop.style.opacity=1;streakPop.style.transform="translate(-50%,-50%) scale(1)";
     clearTimeout(window._popT);
     window._popT=setTimeout(()=>{streakPop.style.opacity=0;streakPop.style.transform="translate(-50%,-50%) scale(.5)";},700);
@@ -560,12 +846,24 @@ function stepPhysics(dt){
 }
 
 function endShot(){
-  if(!scoredThisShot){streak=0;missBuzz();}
+  if(!scoredThisShot){
+    streak=0;
+    if(mode==="levels"){hearts=Math.max(0,hearts-1);if(hearts<=0){showGameOver();return;}}
+    missBuzz();
+  }
+  if(mode==="time"&&timeExpired){
+    showTimeUp();
+    return;
+  }
   resetBall();
-  if(pendingLevelUp){
-    pendingLevelUp=false;level++;applyLevel();
-    banner.title="LEVEL "+(level+1);banner.sub=levelConfig(level).name;banner.t=170;
-    levelChime();
+  if(mode==="levels"&&pendingLevelUp){
+    showComplete();
+    return;
+  }
+  if(mode==="time"&&score>0){
+    const highScoreKey="hoops_tabest_"+level;
+    const saved=parseInt(store.get(highScoreKey,"0"),10)||0;
+    if(score>saved){store.set(highScoreKey,String(score));best=score;}
   }
   updateHud();
 }
@@ -601,15 +899,30 @@ function updateCamera(){
 
 function update(){
   updateHoop();
+  if(mode==="time"&&playing&&isShooting&&!timeExpired){
+    timeLeft=Math.max(0,timeLeft-1/FPS);
+    if(timeLeft<=0){timeLeft=0;timeExpired=true;}
+  }
+  if(streak>=FIRE_STREAK){
+    fireAmt=Math.max(fireAmt,1);
+    emitFlames(0.5);
+  }
   if(isShooting){
     shotTimer++;
     const speed=Math.hypot(ball.velocityX,ball.velocityY);
     const n=Math.max(1,Math.ceil(speed/8)),dt=1/n;
-    for(let i=0;i<n;i++)stepPhysics(dt);
+    let simTicks=0;
+    for(let i=0;i<n;i++){
+      stepPhysics(dt);
+      simTicks++;
+      if(ghostRecording&&simTicks%GHOST_INTERVAL===0){ghostPath.push({x:ball.x,y:ball.y});}
+      if(ghostRecording&&ball.y+ball.radius>=FLOOR_Y-1&&Math.abs(ball.velocityY)<0.8){ghostRecording=false;}
+    }
     ballTrail.push({x:ball.x,y:ball.y});
     if(ballTrail.length>14)ballTrail.shift();
     maxH=Math.max(maxH,ballHeightM());
-    fireAmt=Math.max(0,Math.min(1,(speedMS()-FIRE_MS)/4));   // on fire while faster than FIRE_MS
+    const speedFire=Math.max(0,Math.min(1,(speedMS()-FIRE_MS)/4));
+    fireAmt=Math.max(speedFire,streak>=FIRE_STREAK?1:0);
     if(fireAmt>0)emitFlames(fireAmt);
     if(ball.x<-1500||ball.x>2500||ball.y>H+100||shotTimer>FPS*15){
       endShot();
@@ -812,6 +1125,16 @@ function drawAngleGauge(){
 
 function drawAim(){
   if(isShooting)return;
+  if(ghostPath.length>1){
+    ctx.save();
+    ctx.strokeStyle="rgba(255,255,255,0.35)";
+    ctx.lineWidth=2;
+    ctx.setLineDash([8,8]);
+    ctx.beginPath();
+    ghostPath.forEach((p,i)=>{if(i===0)ctx.moveTo(p.x,p.y);else ctx.lineTo(p.x,p.y);});
+    ctx.stroke();
+    ctx.restore();
+  }
   if(aim.set){
     const pullX=ball.x-aim.dx,pullY=ball.y-aim.dy;            // where the "slingshot" is pulled to
     const d=Math.hypot(aim.dx,aim.dy);
@@ -959,6 +1282,7 @@ function loop(now){
 }
 applyLevel();
 resetBall();
+showMenu();
 updateHud();
 requestAnimationFrame(loop);
 </script>
