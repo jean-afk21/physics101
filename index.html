@@ -230,7 +230,7 @@ let score=0,streak=0,best=parseInt(store.get("hoops_best","0"),10)||0;
 let level=0,levelBaskets=0,pendingLevelUp=false;
 let mouseX=250,mouseY=460,dragging=false,isShooting=false,scoredThisShot=false;
 let restTimer=0,shotTimer=0,maxH=0,fireAmt=0,shake=0;
-let particles=[],flames=[],rings=[],netWave=0,flashAlpha=0,ballTrail=[];
+let particles=[],flames=[],rings=[],netStretch=0,netVelocity=0,netSway=0,netSwayVelocity=0,flashAlpha=0,ballTrail=[];
 let hint={text:"",t:0},banner={title:"",sub:"",t:0};
 const touched={rim:false,board:false};
 
@@ -243,8 +243,8 @@ const start={x:250,y:460};
 const ball={x:250,y:460,radius:20,velocityX:0,velocityY:0,spin:0,color:"#f97316"};
 const hoop={
   x:760,y:230,baseY:230,amp:0,omega:0,tick:0,vy:0,
-  width:110,rimRadius:8,
-  backboardWidth:15,backboardHeight:150,boardDX:0,boardDY:-80,hasPole:true
+  width:90,rimRadius:5,
+  backboardWidth:15,backboardHeight:150,boardDX:0,boardDY:-110,hasPole:true
 };
 
 // ---- pictures (optional) ----
@@ -535,7 +535,10 @@ function checkScore(){
     if(levelBaskets>=LEVEL_GOAL)pendingLevelUp=true;
     if(score>best){best=score;store.set("hoops_best",best);}
     updateHud();
-    scoredThisShot=true;netWave=1;flashAlpha=0.35;
+    scoredThisShot=true;
+    netVelocity+=Math.max(1,ball.velocityY*0.2);
+    netSwayVelocity+=Math.sign(ball.velocityX||1)*Math.max(3,Math.min(7,Math.abs(ball.velocityX)*0.45));
+    flashAlpha=0.35;
     spawnParticles(hoop.x+hoop.width/2,hoop.y+10,"#facc15",26);
     swishChime();
     const kind=touched.board?"BANK SHOT!":touched.rim?"RIM IN!":"SWISH!";
@@ -621,7 +624,14 @@ function update(){
     }
   }
   updateCamera();
-  netWave*=0.9;
+  netVelocity-=netStretch*0.14;
+  netVelocity*=0.82;
+  netStretch+=netVelocity;
+  netSwayVelocity-=netSway*0.035;
+  netSwayVelocity*=0.97;
+  netSway+=netSwayVelocity;
+  if(Math.abs(netStretch)<0.05&&Math.abs(netVelocity)<0.05){netStretch=0;netVelocity=0;}
+  if(Math.abs(netSway)<0.05&&Math.abs(netSwayVelocity)<0.05){netSway=0;netSwayVelocity=0;}
   flashAlpha*=0.9;
   shake*=0.85;if(shake<0.2)shake=0;
   if(hint.t>0)hint.t--;
@@ -681,24 +691,40 @@ function drawHoop(){
   }
   ctx.fillStyle="#fff";ctx.fillRect(b.l,b.t,hoop.backboardWidth,hoop.backboardHeight);
   ctx.strokeStyle="#222";ctx.lineWidth=5;ctx.strokeRect(b.l,b.t,hoop.backboardWidth,hoop.backboardHeight);
-  ctx.strokeStyle="#e63946";ctx.lineWidth=4;ctx.strokeRect(b.l-45,hoop.y-35,45,55);
-  ctx.strokeStyle="#e63946";ctx.lineWidth=8;
+  ctx.strokeStyle="#e63946";ctx.lineWidth=4;ctx.strokeRect(b.l-10,hoop.y-35,10,55);
+  const rows=4,columns=5,netHeight=58+netStretch;
+  const netPoint=(row,column)=>{
+    const progress=row/rows,width=hoop.width*(0.8-0.38*progress);
+    const center=hoop.x+hoop.width/2+netSway*progress*0.75;
+    return {x:center-width/2+width*column/columns,y:hoop.y+4+netHeight*progress};
+  };
+  ctx.strokeStyle="#ffffff";ctx.lineWidth=1.6;
+  ctx.beginPath();
+  for(let row=0;row<=rows;row++){
+    for(let column=0;column<=columns;column++){
+      const point=netPoint(row,column);
+      if(column<columns){
+        const next=netPoint(row,column+1);
+        ctx.moveTo(point.x,point.y);ctx.lineTo(next.x,next.y);
+      }
+      if(row<rows){
+        if(column<columns){
+          const next=netPoint(row+1,column+1);
+          ctx.moveTo(point.x,point.y);ctx.lineTo(next.x,next.y);
+        }
+        if(column>0){
+          const next=netPoint(row+1,column-1);
+          ctx.moveTo(point.x,point.y);ctx.lineTo(next.x,next.y);
+        }
+      }
+    }
+  }
+  ctx.stroke();
+  ctx.strokeStyle="#e63946";ctx.lineWidth=5;
   ctx.beginPath();ctx.moveTo(hoop.x,hoop.y);ctx.lineTo(hoop.x+hoop.width,hoop.y);ctx.stroke();
   ctx.fillStyle="#e63946";
   ctx.beginPath();ctx.arc(hoop.x,hoop.y,hoop.rimRadius,0,Math.PI*2);ctx.fill();
   ctx.beginPath();ctx.arc(hoop.x+hoop.width,hoop.y,hoop.rimRadius,0,Math.PI*2);ctx.fill();
-  const sway=netWave*10;
-  ctx.strokeStyle="#ffffff";ctx.lineWidth=2;
-  for(let i=0;i<=6;i++){
-    const x=hoop.x+(hoop.width/6)*i;
-    ctx.beginPath();ctx.moveTo(x,hoop.y);
-    ctx.quadraticCurveTo(hoop.x+hoop.width/2+sway,hoop.y+35,hoop.x+hoop.width/2,hoop.y+60);
-    ctx.stroke();
-  }
-  for(let i=1;i<=3;i++){
-    ctx.beginPath();ctx.moveTo(hoop.x+i*10,hoop.y+i*15+sway*0.3);
-    ctx.lineTo(hoop.x+hoop.width-i*10,hoop.y+i*15+sway*0.3);ctx.stroke();
-  }
 }
 
 // green outlines of everything the ball can collide with (press H) - use it to line up your hoop picture
