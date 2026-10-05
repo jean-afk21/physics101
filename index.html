@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Physics Hoops</title>
+<title>PHoops</title>
 <style>
 :root{
   --bg:#0b1020; --panel:#161d33; --accent:#f97316; --accent2:#fb923c;
@@ -281,7 +281,7 @@ const FIRE_MS=13;                      // the ball "catches fire" above this spe
 const IMPACT_MS=5;                     // impacts faster than this get a shockwave (visual only)
 
 // ---- levels ----
-const POINTS={rim:1,swish:2,bank:3};
+const POINTS={swish:4,rim:3,bank:2};
 const MAX_MULT=5;
 const HEARTS=5;
 const TIME_START=30;
@@ -319,7 +319,7 @@ let restTimer=0,shotTimer=0,maxH=0,fireAmt=0,shake=0;
 let particles=[],flames=[],rings=[],netStretch=0,netVelocity=0,netSway=0,netSwayVelocity=0,flashAlpha=0,ballTrail=[];
 let hint={text:"",t:0},banner={title:"",sub:"",t:0};
 let ghostPath=[],ghostRecording=false;
-const touched={rim:false,board:false};
+const touched={rim:false,board:false,first:null};
 
 // the locked-in aim: launch vector = (ball position - pull point), clamped to MAX_DRAG
 const aim={dx:0,dy:0,set:false};
@@ -600,7 +600,7 @@ function shoot(){
   ball.velocityX=aim.dx*POWER_SCALE;
   ball.velocityY=aim.dy*POWER_SCALE;
   isShooting=true;scoredThisShot=false;shotTimer=0;restTimer=0;maxH=ballHeightM();
-  touched.rim=false;touched.board=false;
+  touched.rim=false;touched.board=false;touched.first=null;
   ghostPath=[];ghostRecording=true;
   const ms=speedMS();
   whoosh(Math.hypot(ball.velocityX,ball.velocityY));
@@ -701,7 +701,6 @@ function emitFlames(amt){
   }
   if(flames.length>300)flames.splice(0,flames.length-300);
 }
-
 // ---- physics ----
 // dt is a fraction of one step: fast shots are split into smaller sub-steps so the ball can't tunnel through thin things
 function checkFloorCollision(dt){
@@ -747,6 +746,7 @@ function checkBackboardCollision(){
   let hit=collideRect(b.l,b.t,b.r,b.b,0.55,0.1,hoop.vy);
   if(!hit&&hoop.hasPole){const p=poleRect();hit=collideRect(p.l,p.t,p.r,p.b,0.4,0.2,0);}
   if(hit>0){
+    if(!touched.first)touched.first="board";
     touched.board=true;
     if(hit>1.5)impactSound(hit,175,0.18);
     impactFx(ball.x+ball.radius*0.6,ball.y,hit);
@@ -765,6 +765,7 @@ function checkRimPointCollision(rimX,rimY){
       let vx=ball.velocityX-1.5*v*nx,vy=rvy-1.5*v*ny;
       vx*=0.8;vy*=0.8;
       ball.velocityX=vx;ball.velocityY=vy+hoop.vy;
+      if(!touched.first)touched.first="rim";
       touched.rim=true;
       if(-v>1)impactSound(-v,260,0.16);
       impactFx(rimX,rimY,-v);
@@ -784,7 +785,7 @@ function applyMagnet(dt){
 function checkScore(){
   const hoopLeft=hoop.x,hoopRight=hoop.x+hoop.width,hoopY=hoop.y;
   if(!scoredThisShot&&ball.x>hoopLeft+4&&ball.x<hoopRight-4&&ball.y>hoopY&&ball.y<hoopY+22&&ball.velocityY>0){
-    const type=touched.board?"bank":touched.rim?"rim":"swish";
+    const type=touched.first==="board"?"bank":touched.first==="rim"?"rim":"swish";
     const multiplier=Math.min(streak+1,MAX_MULT);
     const points=POINTS[type]*multiplier;
     streak++;
@@ -827,7 +828,7 @@ function checkScore(){
     flashAlpha=0.35;
     spawnParticles(hoop.x+hoop.width/2,hoop.y+10,"#facc15",26);
     swishChime();
-    const label=touched.board?"BANK SHOT!":touched.rim?"RIM IN!":"SWISH!";
+    const label=touched.first==="board"?"BANK SHOT!":touched.first==="rim"?"RIM IN!":"SWISH!";
     streakPop.textContent = label + " +" + points + (multiplier>1 ? "  x"+multiplier : "");
     streakPop.style.opacity=1;streakPop.style.transform="translate(-50%,-50%) scale(1)";
     clearTimeout(window._popT);
@@ -1083,9 +1084,10 @@ function drawBall(){
   const scale=1-Math.max(0,(ball.y-500))*0.00015;
   ctx.fillStyle="rgba(0,0,0,0.2)";
   ctx.beginPath();ctx.ellipse(ball.x,H-65,ball.radius*scale,5,0,0,Math.PI*2);ctx.fill();
-  if(fireAmt>0.02){                         // fire glow behind the ball
+  if(fireAmt>0.02||streak>=FIRE_STREAK){                         // fire glow behind the ball
+    const glowAmt=Math.max(fireAmt,streak>=FIRE_STREAK?1:0);
     const g=ctx.createRadialGradient(ball.x,ball.y,ball.radius*0.5,ball.x,ball.y,ball.radius*2.6);
-    g.addColorStop(0,`rgba(255,200,80,${0.55*fireAmt})`);g.addColorStop(1,"rgba(255,80,0,0)");
+    g.addColorStop(0,`rgba(255,200,80,${0.55*glowAmt})`);g.addColorStop(1,"rgba(255,80,0,0)");
     ctx.fillStyle=g;ctx.beginPath();ctx.arc(ball.x,ball.y,ball.radius*2.6,0,Math.PI*2);ctx.fill();
   }
   ctx.save();
