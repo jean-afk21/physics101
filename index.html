@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>PHoops</title>
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
 <style>
 :root{
   --bg:#0b1020; --panel:#161d33; --accent:#f97316; --accent2:#fb923c;
@@ -89,8 +90,10 @@ body{
 .settings input{width:1.3em;height:1.3em;accent-color:var(--accent)}
 
 /* bottom: shoot button (lock mode only) and hint line */
-button{border:none;border-radius:10px;font-weight:700;cursor:pointer;transition:transform .1s,filter .15s}
+button{border:none;border-radius:10px;font-weight:700;cursor:pointer;transition:transform .1s,translate .15s,filter .15s,box-shadow .15s,background-color .15s,border-color .15s}
 button:active{transform:scale(.95)}
+button:not(:disabled):hover{translate:0 -2px;filter:brightness(1.08)}
+button:focus-visible{outline:3px solid #60a5fa;outline-offset:3px}
 #shootButton{
   position:absolute;left:50%;bottom:7.5cqw;transform:translateX(-50%);
   padding:.9cqw 3cqw;font-size:1.6em;color:#fff;
@@ -109,30 +112,44 @@ button:active{transform:scale(.95)}
 .overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:12;background:rgba(8,12,22,.7);backdrop-filter:blur(4px)}
 .overlay.hidden{display:none}
 .panel{width:min(92%,560px);background:rgba(15,19,34,.96);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:20px 18px;box-shadow:0 20px 60px rgba(0,0,0,.4)}
-.panel-header{font-size:1.15em;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:#f8fafc;margin-bottom:14px;text-align:center}
-.mode-tabs{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px}
-.mode-tab{padding:10px 8px;border-radius:10px;background:rgba(255,255,255,.04);color:#cbd5e1;border:1px solid rgba(255,255,255,.1);font-weight:800;letter-spacing:.12em;text-transform:uppercase}
-.mode-tab.active{background:linear-gradient(180deg,#fbbf24,#f97316);color:#1c1207;border-color:transparent}
-.level-list{display:grid;gap:10px;max-height:min(66vh,460px);overflow:auto;padding-right:4px}
-.level-option{display:grid;grid-template-columns:48px 1fr auto auto;align-items:center;gap:10px;width:100%;padding:14px 16px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.02);color:#fff;text-align:left}
-.level-option:hover{background:rgba(255,255,255,.04)}
-.level-option .num{font-weight:800;font-size:1.05em;color:#fbbf24;width:36px;text-align:center}
-.level-option .name{font-weight:700}
-.level-option .best{font-size:.9em;color:#cbd5e1}
-.level-option .clear{font-size:.78em;font-weight:700;letter-spacing:.08em;text-transform:uppercase;border-radius:999px;padding:.35rem .7rem;background:rgba(34,197,94,.18);color:#86efac;border:1px solid rgba(34,197,94,.45)}
+.menu-panel{width:min(94%,500px);padding:20px;background:#fff;border:0;border-radius:18px;color:#173f75;box-shadow:0 16px 48px rgba(19,54,101,.2)}
+#menuOverlay{background:rgba(223,237,255,.46);backdrop-filter:blur(2px)}
+.panel-header{font-size:1.2em;font-weight:800;letter-spacing:0;text-transform:none;color:#173f75;margin-bottom:14px;text-align:center}
+.mode-tabs{display:grid;grid-template-columns:repeat(2,1fr);gap:4px;margin-bottom:14px;padding:4px;border-radius:14px;background:#edf3fb}
+.mode-tab{padding:9px 8px;border-radius:10px;background:transparent;color:#6983a7;border:0;font-weight:700;letter-spacing:0;text-transform:capitalize}
+.mode-tab.active{background:#ff922e;color:#173f75;border-color:transparent}
+.level-list{display:grid;gap:6px;max-height:min(68vh,460px);overflow:auto;padding:0 1px 1px}
+.level-option{display:grid;grid-template-columns:20px 1fr auto;align-items:center;gap:0 0;width:100%;padding:10px 12px;border-radius:12px;border:1px solid transparent;background:#f3f7fc;color:#173f75;text-align:left}
+.level-option:hover{background:#eaf2fc;border-color:#dce9f8;box-shadow:0 4px 12px rgba(23,63,117,.08)}
+.level-option:disabled{cursor:not-allowed}
+.level-option.locked{background:#f4f7fb;color:#6680a4}
+.level-option.locked:hover{background:#f4f7fb;border-color:transparent;box-shadow:none;filter:none}
+.level-option.locked .num,.level-option.locked .name{color:#6680a4}
+.level-option .lock-icon{grid-column:3;grid-row:1 / span 2;width:15px;height:15px;fill:none;stroke:#6680a4;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.level-option .lock-icon[hidden]{display:none}
+.level-option .num{grid-row:1 / span 2;font-weight:800;font-size:.95em;color:#17477f;text-align:left}
+.level-option .level-info{display:flex;flex-direction:column;gap:1px;min-width:0}
+.level-option .name{font-weight:700;font-size:.9em}
+.level-option .best{font-size:.72em;color:#7185a4}
+.level-option .clear{grid-column:3;grid-row:1 / span 2;font-size:.67em;font-weight:700;letter-spacing:0;text-transform:none;border-radius:999px;padding:4px 7px;background:transparent;color:#16855b;border:0}
 .level-option .clear[hidden]{display:none}
-.level-option.active{outline:2px solid rgba(96,165,250,.9);box-shadow:0 0 0 2px rgba(96,165,250,.15)}
-.complete-panel{text-align:center;padding:26px 22px 20px}
-.complete-panel h2{font-size:clamp(1.5rem,3vw,2.3rem);font-weight:900;letter-spacing:.06em;text-transform:uppercase;margin-bottom:18px}
-.complete-lines{display:grid;gap:8px;margin-bottom:18px}
-.complete-line{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08)}
-.complete-line span{font-weight:700;color:#cbd5e1;letter-spacing:.08em;text-transform:uppercase}
-.complete-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-.complete-actions button,.panel-button{padding:12px 10px;border-radius:12px;font-size:.95em;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
-.complete-actions .primary,.panel-button.primary{background:linear-gradient(180deg,#fbbf24,#f97316);color:#1c1207}
-.complete-actions button:not(.primary),.panel-button{background:rgba(255,255,255,.06);color:#fff;border:1px solid rgba(255,255,255,.12)}
+.level-option.active{outline:2px solid rgba(96,165,250,.65);box-shadow:0 0 0 3px rgba(96,165,250,.12)}
+.complete-panel{width:min(94%,480px);text-align:center;padding:28px 24px 20px;background:#f4f8ff;border:1px solid rgba(255,255,255,.9);border-radius:22px;color:#173f75;box-shadow:0 18px 50px rgba(19,54,101,.2)}
+#completeOverlay{background:rgba(223,237,255,.48);backdrop-filter:blur(2px)}
+.complete-panel h2{font-size:clamp(1.15rem,2.5vw,1.55rem);font-weight:800;letter-spacing:0;text-transform:none;margin-bottom:12px;color:#173f75}
+.complete-score-wrap{display:flex;flex-direction:column;align-items:center;margin-bottom:12px}
+.complete-score-wrap strong{font-size:clamp(3.6rem,9vw,5rem);font-weight:900;line-height:.95;color:#17477f;font-variant-numeric:tabular-nums}
+.complete-score-wrap span{margin-top:5px;font-size:.9rem;color:#7185a4}
+.complete-summary{margin:0 auto 16px;color:#68809f;font-size:.98rem}
+.complete-summary strong{color:#506b8e;font-weight:700}
+.complete-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px 12px}
+.complete-actions button,.panel-button{padding:12px 10px;border-radius:12px;font-size:.95em;font-weight:800;letter-spacing:.02em;text-transform:none}
+.complete-actions .primary,.panel-button.primary{grid-column:1 / -1;background:#ff922e;color:#174477;box-shadow:0 3px 0 rgba(213,105,21,.2)}
+.complete-actions .primary:hover,.panel-button.primary:hover{background:#ff9f45;box-shadow:0 5px 12px rgba(213,105,21,.28)}
+.complete-actions button:not(.primary),.panel-button{background:transparent;color:#7486a0;border:0;font-size:.85em;font-weight:600;text-transform:none;letter-spacing:0}
+.complete-actions button:not(.primary):hover,.panel-button:hover{background:rgba(23,71,127,.07);color:#315d91}
 .complete-actions button[hidden]{display:none}
-.complete-record{display:inline-block;margin:0 auto 16px;padding:6px 10px;border-radius:999px;background:rgba(34,197,94,.14);border:1px solid rgba(34,197,94,.4);color:#86efac;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.complete-record{display:inline-block;margin:0 auto 14px;padding:6px 10px;border-radius:999px;background:#dcfce7;border:1px solid #86efac;color:#15803d;font-weight:800;letter-spacing:.04em}
 </style>
 </head>
 <body>
@@ -195,8 +212,8 @@ button:active{transform:scale(.95)}
     <div id="streakPop"></div>
 
     <div id="menuOverlay" class="overlay">
-      <div class="panel">
-        <div class="panel-header">Level Select</div>
+      <div class="panel menu-panel">
+        <div class="panel-header">Choose a level</div>
         <div id="modeTabs" class="mode-tabs"></div>
         <div id="menuLevels" class="level-list"></div>
       </div>
@@ -205,11 +222,11 @@ button:active{transform:scale(.95)}
     <div id="completeOverlay" class="overlay hidden">
       <div class="panel complete-panel">
         <h2 id="completeTitle">LEVEL 1 CLEARED!</h2>
-        <div class="complete-lines">
-          <div class="complete-line"><span id="completeMetricLabel">Score</span><strong id="completeScore">0</strong></div>
-          <div class="complete-line"><span id="completeBestLabel">Best</span><strong id="completeBest">0</strong></div>
-          <div class="complete-line"><span>Longest streak</span><strong id="completeStreak">0</strong></div>
+        <div class="complete-score-wrap">
+          <strong id="completeScore">0</strong>
+          <span id="completeMetricLabel">points</span>
         </div>
+        <p class="complete-summary"><span id="completeBestLabel">Target</span> <strong id="completeBest">0</strong> · Best streak <strong id="completeStreak">0</strong></p>
         <div id="completeRecord" class="complete-record" hidden>New record!</div>
         <div class="complete-actions">
           <button id="nextLevelButton" class="primary">Next Level</button>
@@ -367,7 +384,7 @@ function renderModeTabs(){
   ["levels","time"].forEach(name=>{
     const btn=document.createElement("button");
     btn.type="button";
-    btn.textContent=name==="levels"?"LEVELS":"TIME ATTACK";
+    btn.textContent=name==="levels"?"Levels":"Time attack";
     btn.className="mode-tab"+(mode===name?" active":"");
     btn.addEventListener("click",()=>{
       mode=name;
@@ -385,15 +402,22 @@ function renderMenu(){
     btn.type="button";
     btn.className="level-option"+(i===level&&playing?" active":"");
     const cleared=store.get("hoops_cleared_"+i,"0")==="1";
+    const locked=mode==="levels"&&i>0&&store.get("hoops_cleared_"+(i-1),"0")!=="1";
+    btn.disabled=locked;
+    if(locked){
+      btn.classList.add("locked");
+      btn.title="Clear "+LEVELS[i-1].name+" to unlock";
+    }
     if(mode==="time"){
       const bestScore=parseInt(store.get("hoops_tabest_"+i,"0"),10)||0;
       const bestStreak=parseInt(store.get("hoops_tastreak_"+i,"0"),10)||0;
-      btn.innerHTML='<span class="num">'+(i+1)+'.</span><span class="name">'+L.name+'</span><span class="best">best score '+bestScore+' · streak '+bestStreak+'</span><span class="clear" hidden>✓</span>';
+      btn.innerHTML='<span class="num">'+(i+1)+'</span><span class="level-info"><span class="name">'+L.name+'</span><span class="best">Best score '+bestScore+' · streak '+bestStreak+'</span></span><span class="clear" hidden>Cleared</span><svg class="lock-icon" viewBox="0 0 16 16" aria-hidden="true" hidden><rect x="3.5" y="7" width="9" height="7" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2"/></svg>';
     } else {
       const bestStreak=parseInt(store.get("hoops_streak_"+i,"0"),10)||0;
-      btn.innerHTML='<span class="num">'+(i+1)+'.</span><span class="name">'+L.name+'</span><span class="best">'+(cleared?"✓ cleared · best streak "+bestStreak:"best streak "+bestStreak)+'</span><span class="clear"'+(cleared?'':' hidden')+'>✓ cleared</span>';
+      const detail=locked?"Clear "+LEVELS[i-1].name+" to unlock":"Best streak "+bestStreak;
+      btn.innerHTML='<span class="num">'+(i+1)+'</span><span class="level-info"><span class="name">'+L.name+'</span><span class="best">'+detail+'</span></span><span class="clear"'+(cleared?'':' hidden')+'>Cleared</span><svg class="lock-icon" viewBox="0 0 16 16" aria-hidden="true"'+(locked?'':' hidden')+'><rect x="3.5" y="7" width="9" height="7" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2"/></svg>';
     }
-    btn.addEventListener("click",()=>startLevel(i));
+    if(!locked)btn.addEventListener("click",()=>startLevel(i));
     menuLevels.appendChild(btn);
   });
 }
@@ -509,8 +533,8 @@ function showComplete(){
   playing=false;
   pendingLevelUp=false;
   store.set("hoops_cleared_"+level,"1");
-  completeTitle.textContent="LEVEL "+(level+1)+" CLEARED!";
-  completeMetricLabel.textContent="Score";
+  completeTitle.textContent="Level "+(level+1)+" cleared!";
+  completeMetricLabel.textContent="points";
   completeBestLabel.textContent="Target";
   completeScore.textContent=String(score);
   completeBest.textContent=String(levelConfig(level).target);
@@ -527,7 +551,7 @@ function showComplete(){
 function showGameOver(){
   playing=false;
   completeTitle.textContent="GAME OVER";
-  completeMetricLabel.textContent="Score";
+  completeMetricLabel.textContent="points";
   completeBestLabel.textContent="Target";
   completeScore.textContent=String(score);
   completeBest.textContent=String(levelConfig(level).target);
@@ -543,7 +567,7 @@ function showGameOver(){
 function showTimeUp(){
   playing=false;
   completeTitle.textContent="TIME'S UP";
-  completeMetricLabel.textContent="Score";
+  completeMetricLabel.textContent="points";
   completeBestLabel.textContent="Best";
   completeScore.textContent=String(score);
   completeBest.textContent=String(best);
